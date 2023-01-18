@@ -1,9 +1,0 @@
-CREATE TABLE [dbo].[Admin]
-(
-	[AD_ID] INT NOT NULL PRIMARY KEY IDENTITY, 
-    [AD_Vards] VARCHAR(50) NOT NULL, 
-    [AD_Uzvards] VARCHAR(50) NOT NULL, 
-    [AD_Login] VARCHAR(50) NOT NULL, 
-    [AD_Telefons] VARCHAR(50) NOT NULL, 
-    [AD_Password] VARCHAR(50) NOT NULL
-)
