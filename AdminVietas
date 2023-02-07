@@ -1,0 +1,121 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class AdminVietas_Form : Form
+    {
+        public AdminVietas_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+
+        private void AdminVietas_Form_Load(object sender, EventArgs e)
+        {
+            dataGridView2.Visible = false;
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from AtrasanasVieta", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+        int selectedRow;
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            selectedRow = e.RowIndex;
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox_A_Numurs.Text = row.Cells[0].Value.ToString();
+
+                textBox_AV_Vieta.Text = row.Cells[1].Value.ToString();
+                textBox_A_Zimols.Text = row.Cells[2].Value.ToString();
+          
+            }
+        }
+
+        private void label22_Click(object sender, EventArgs e)
+        {
+            AdminAuto adminAuto = new AdminAuto();
+            this.Hide();
+            adminAuto.Show();
+        }
+
+        private void label21_Click(object sender, EventArgs e)
+        {
+            AdminKlients adminKlients = new AdminKlients();
+            this.Hide();
+            adminKlients.Show();
+        }
+
+        private void Delete_Img_Click(object sender, EventArgs e)
+        {
+            textBox_AV_Vieta.Clear();
+            textBox_A_Numurs.Clear();
+            textBox_A_Zimols.Clear();
+        }
+
+        private void refresh_Img_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminVietas_Form adminVietas_ = new AdminVietas_Form();
+            adminVietas_.Show();
+        }
+
+        private void Insert_Button_Click(object sender, EventArgs e)
+        {
+            Insert_AV_Form insert_AV_ = new Insert_AV_Form();
+            this.Hide();
+            insert_AV_.Show();
+        }
+
+        private void Delete_buton_Click(object sender, EventArgs e)
+        {
+            DEL_AV_Form dEL_AV = new DEL_AV_Form();
+            this.Hide();
+            dEL_AV.Show();
+        }
+
+        private void Update_Button_Click(object sender, EventArgs e)
+        {
+            UPDATE_AV_Form uPDATE_AV_ = new UPDATE_AV_Form();
+            this.Hide();
+            uPDATE_AV_.Show();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            dataGridView1.Visible = false;
+            dataGridView2.Visible = true;
+            var numurs = textBox1.Text;
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+          ($"select * from AtrasanasVieta  where A_Numurs like '{numurs}'", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView2.DataSource = dataSet.Tables[0];
+            if (textBox1.Text == "")
+            {
+                dataGridView2.Visible = false;
+                dataGridView1.Visible = true;
+            }
+        }
+    }
+}
