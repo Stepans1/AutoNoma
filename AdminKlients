@@ -1,0 +1,156 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class AdminKlients : Form
+    {
+        int selectedRow;
+      
+        public AdminKlients()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+       
+       
+        private void AdminFormV3_Load(object sender, EventArgs e)
+        {
+            dataGridView2.Visible = false;
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+        }
+       
+        private void RefreshDataGridKlients(DataGridView dgw)
+        {
+           
+            this.Hide();
+            AdminKlients adminFormV3 = new AdminKlients();
+            adminFormV3.Show();
+        }
+        private void tabPage_Klients_Enter(object sender, EventArgs e)
+        {
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from Klients", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)//vivvod pieraksti
+        {
+            selectedRow = e.RowIndex;
+      
+          
+            if (dataGridView1.Visible == true && e.RowIndex>=0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox_ID.Text = row.Cells[0].Value.ToString();
+                textBox_Pasts.Text = row.Cells[1].Value.ToString();
+                textBox_Vards.Text = row.Cells[2].Value.ToString();
+                textBox_Uzvards.Text = row.Cells[3].Value.ToString();
+                textBox_Parole.Text = row.Cells[4].Value.ToString();
+                textBox_Birthday.Text = row.Cells[5].Value.ToString();
+            }
+        
+        }
+
+        private void refresh_Img_Click(object sender, EventArgs e)
+        {
+            RefreshDataGridKlients(dataGridView1);
+        }
+
+        private void Insert_Button_Klients_Click(object sender, EventArgs e)
+        {
+            Insert_Klienti_Form insert_Klienti_Form = new Insert_Klienti_Form();
+            this.Hide();
+            insert_Klienti_Form.Show();
+        }
+
+        private void Delete_buton_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            DEL_Klients_Form dEL_Klients_Form = new DEL_Klients_Form();
+            dEL_Klients_Form.Show();
+           
+        }
+
+       
+
+        private void Update_Button_Click(object sender, EventArgs e)
+        {
+           
+            Update_KL_Form update_KL_Form = new Update_KL_Form();
+            this.Hide();
+            update_KL_Form.Show();
+        }
+
+        
+       
+
+       
+
+        private void Delete_Img_Click(object sender, EventArgs e)
+        {
+            textBox_Birthday.Clear();
+            textBox_ID.Clear();
+            textBox_Parole.Clear();
+            textBox_Pasts.Clear();
+            textBox_Uzvards.Clear();
+            textBox_Vards.Clear();
+
+        }
+
+
+
+
+
+       
+
+        private void label22_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminAuto adminAuto = new AdminAuto();
+            adminAuto.Show();
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+            AdminVietas_Form adminVietas_Form = new AdminVietas_Form();
+            this.Hide();
+            adminVietas_Form.Show();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+
+            dataGridView1.Visible = false;
+            dataGridView2.Visible = true;
+             var id = textBox1.Text;
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+          ($"select * from Klients  where K_ID like '{id}'", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView2.DataSource = dataSet.Tables[0];
+            if (textBox1.Text=="")
+            {
+                dataGridView2.Visible = false;
+                dataGridView1.Visible = true;
+            }
+        }
+    }
+}
