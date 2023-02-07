@@ -1,0 +1,68 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class Insert_AV_Form : Form
+    {
+        public Insert_AV_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+
+        private void Insert_AV_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+        
+        }
+
+        private void Insert_Auto_Button_Click(object sender, EventArgs e)
+        {
+            var Vieeta = textBox_Vieta.Text;
+            var Numurs = textBox_Numurs.Text;
+
+            try
+            {
+                var addQerry = $"insert into AtrasanasVieta (AV_Vieta,A_Numurs)values('{Vieeta}','{Numurs}')";
+                var command = new SqlCommand(addQerry, SqlConnection);
+                command.ExecuteNonQuery();
+                MessageBox.Show("Pieerakts ir izveidots");
+            }
+            catch 
+            {
+
+
+                MessageBox.Show("tada numura nau");
+            }
+
+
+
+
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            textBox_Vieta.Clear();
+            textBox_Numurs.Clear();
+        }
+
+        private void BACK_Insert_Auto_Button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminVietas_Form adminVietas_ = new AdminVietas_Form();
+            adminVietas_.Show();
+        }
+    }
+}
