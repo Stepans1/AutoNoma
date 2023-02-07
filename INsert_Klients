@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class Insert_Klienti_Form : Form
+    {
+        public Insert_Klienti_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+        private void Insert_Klienti_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+        }
+        private void BACK_Insert_Kl_Button_Click(object sender, EventArgs e)
+        {
+            AdminKlients adminFormV3 = new AdminKlients();
+            this.Hide();
+            adminFormV3.Show();
+        }
+
+        private void Insert_Klienti_Button_Click(object sender, EventArgs e)
+        {
+            var K_Pasts = textBox_K_Pasts.Text;
+            SqlDataAdapter adapter = new SqlDataAdapter();
+
+            DataTable table = new DataTable();
+            string query = $"select K_Pasts from Klients where  K_Pasts='{K_Pasts}'";
+            SqlCommand command1 = new SqlCommand(query, SqlConnection);
+            adapter.SelectCommand = command1;
+            adapter.Fill(table);
+
+            if (table.Rows.Count == 1)
+            {
+                Insert_Klienti_Form insert_Klienti_Form = new Insert_Klienti_Form();
+                MessageBox.Show("Šis pasts ir aiznemts");
+                this.Hide();
+                insert_Klienti_Form.Show();
+            }
+            else
+            {
+                try
+                {
+                    DateTime date = DateTime.Parse(textBox_K_Birthday.Text);
+                    string query1 = $"INSERT into Klients(K_Pasts,K_Vards,K_Uzvards,K_Parole,K_Birthday)VALUES(@K_Pasts,@K_Vards,@K_Uzvards,@K_Parole,@K_Birthday)";
+
+
+                    SqlCommand command = new SqlCommand(query1, SqlConnection);
+
+                    command.Parameters.AddWithValue("K_Pasts", textBox_K_Pasts.Text);
+                    command.Parameters.AddWithValue("K_Parole", textBox_K_Parole.Text);
+                    command.Parameters.AddWithValue("K_Vards", textBox_K_Vards.Text);
+                    command.Parameters.AddWithValue("K_Uzvards", textBox_K_Uzvards.Text);
+                    command.Parameters.AddWithValue("K_Birthday", $"{date.Month}/{date.Day}/{date.Year}");
+                    MessageBox.Show(command.ExecuteNonQuery().ToString());
+                    textBox_K_Pasts.Clear();
+                    textBox_K_Parole.Clear();
+                    textBox_K_Vards.Clear();
+                    textBox_K_Uzvards.Clear();
+                    textBox_K_Birthday.Clear();
+                }
+                catch
+                {
+                    MessageBox.Show(" Format is not corect ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    textBox_K_Pasts.Clear();
+                    textBox_K_Parole.Clear();
+                    textBox_K_Vards.Clear();
+                    textBox_K_Uzvards.Clear();
+                    textBox_K_Birthday.Clear();
+
+                    Insert_Klienti_Form insert_Klienti_Form = new Insert_Klienti_Form();
+                    this.Hide();
+                    insert_Klienti_Form.Show();
+                }
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            textBox_K_Birthday.Clear();
+            textBox_K_Parole.Clear();
+            textBox_K_Pasts.Clear();
+            textBox_K_Uzvards.Clear();
+            textBox_K_Vards.Clear();
+        }
+    }
+}
