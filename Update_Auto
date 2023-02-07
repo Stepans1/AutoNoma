@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class UPDATE_AUTO_Form : Form
+    {
+        public UPDATE_AUTO_Form()
+        {
+            InitializeComponent();
+        }
+        int selectedRow;
+        private SqlConnection SqlConnection = null;
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            selectedRow = e.RowIndex;
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox_Numurs.Text= row.Cells[0].Value.ToString();
+                textBox_Zimols.Text = row.Cells[1].Value.ToString();
+                textBox_Modelis.Text = row.Cells[2].Value.ToString();
+                textBox_Cena1H.Text = row.Cells[3].Value.ToString();
+             
+
+            }
+        }
+
+        private void UPDATE_AUTO_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+          ("select * from Automobili", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void BACK_Button_Update_Auto_Click(object sender, EventArgs e)
+        {
+            AdminAuto adminAuto = new AdminAuto();
+            this.Hide();
+            adminAuto.Show();
+        }
+        private void update()
+        {
+            var selectedRowIndex = dataGridView1.CurrentCell.RowIndex;
+            var Numurs = textBox_Numurs.Text;
+            var Zimols  = textBox_Zimols.Text;
+            var Modelis = textBox_Modelis.Text;
+            int Cena1H;
+       
+
+            if (dataGridView1.Rows[selectedRowIndex].Cells[0].Value.ToString() != string.Empty)
+            {
+                if (int.TryParse(textBox_Cena1H.Text,out Cena1H))
+                {
+                    dataGridView1.Rows[selectedRowIndex].SetValues(Numurs, Zimols, Modelis, Cena1H);
+                    var changeQuery = $"update Automobili set A_Zimols='{Zimols}',A_Modelis='{Modelis}',A_CenaPar1H='{Cena1H}' where A_Numurs='{Numurs}'";
+                    var command = new SqlCommand(changeQuery, SqlConnection);
+                    command.ExecuteNonQuery();
+                }
+                else
+                {
+                    MessageBox.Show("Cenai jabut INT formata !!!");
+                }
+            }
+
+        }
+
+        private void UPDATE_Button_Auto_Click(object sender, EventArgs e)
+        {
+            update();
+        }
+
+        private void pictureBox_Clear_Click(object sender, EventArgs e)
+        {
+            textBox_Cena1H.Clear();
+            textBox_Modelis.Clear();
+            textBox_Numurs.Clear();
+            textBox_Zimols.Clear();
+
+        }
+
+        private void pictureBox_Refresh_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            UPDATE_AUTO_Form uPDATE_AUTO_Form = new UPDATE_AUTO_Form();
+            uPDATE_AUTO_Form.Show();
+        }
+    }
+}
