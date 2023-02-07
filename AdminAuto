@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class AdminAuto : Form
+    {
+        int selectedRow;
+        public AdminAuto()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+
+
+        private void AdminAuto_Load_1(object sender, EventArgs e)
+        {
+            dataGridView2.Visible = false;
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from Automobili", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            selectedRow = e.RowIndex;
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox_A_Numurs.Text = row.Cells[0].Value.ToString();
+              
+                textBox_A_Zimols.Text = row.Cells[1].Value.ToString();
+                textBox_A_Modelis.Text = row.Cells[2].Value.ToString();
+                textBox_A_Cena1H.Text = row.Cells[3].Value.ToString();
+                textBox_A_IresLaiks.Text = row.Cells[4].Value.ToString();
+            }
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            textBox_A_Numurs.Clear();
+      
+            textBox_A_Zimols.Clear();
+            textBox_A_Modelis.Clear();
+            textBox_A_Cena1H.Clear();
+            textBox_A_IresLaiks.Clear();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminAuto adminAuto = new AdminAuto();
+            adminAuto.Show();
+        }
+
+        private void button_INSERT_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            INSERT_AUTO_Form iNSERT_AUTO_Form = new INSERT_AUTO_Form();
+            iNSERT_AUTO_Form.Show();
+        }
+
+        private void button_DEL_Click(object sender, EventArgs e)
+        {
+            DEL_AUTO_Form dEL_AUTO_Form = new DEL_AUTO_Form();
+            this.Hide();
+            dEL_AUTO_Form.Show();
+        }
+
+        private void button_UPDATE_Click(object sender, EventArgs e)
+        {
+            UPDATE_AUTO_Form uPDATE_AUTO_Form = new UPDATE_AUTO_Form();
+            this.Hide();
+            uPDATE_AUTO_Form.Show();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminAuto adminAuto = new AdminAuto();
+            adminAuto.Show();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            AdminKlients adminKlients = new AdminKlients();
+            this.Hide();
+            adminKlients.Show();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+            AdminVietas_Form adminVietas_Form = new AdminVietas_Form();
+            this.Hide();
+            adminVietas_Form.Show();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            dataGridView1.Visible = false;
+            dataGridView2.Visible = true;
+            var numurs = textBox1.Text;
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+          ($"select * from Automobili  where A_Numurs like '{numurs}'", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView2.DataSource = dataSet.Tables[0];
+            if (textBox1.Text == "")
+            {
+                dataGridView2.Visible = false;
+                dataGridView1.Visible = true;
+            }
+        }
+    }
+}
+
+        
