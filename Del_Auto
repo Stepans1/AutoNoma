@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class DEL_AUTO_Form : Form
+    {
+        public DEL_AUTO_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+        private void DEL_AUTO_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from Automobili", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void Back_DEL_Auto_button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminAuto adminAuto = new AdminAuto();
+            adminAuto.Show();
+        }
+
+        private void DEL_Auto_button_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = $"delete from Automobili where A_Numurs = @A_Numurs";
+                SqlCommand command = new SqlCommand(query, SqlConnection);
+                command.Parameters.AddWithValue("A_Numurs", textBox1.Text);
+                MessageBox.Show(command.ExecuteNonQuery().ToString());
+                textBox1.Clear();
+                //string query1 = $"";
+                //SqlCommand command1 = new SqlCommand(query1, SqlConnection);
+                this.Hide();
+                DEL_AUTO_Form dEL_AUTO_Form = new DEL_AUTO_Form();
+                dEL_AUTO_Form.Show();
+            }
+            catch
+            {
+                MessageBox.Show(" ERROR ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox1.Clear();
+
+
+                DEL_AUTO_Form dEL_AUTO_Form = new DEL_AUTO_Form();
+
+                this.Hide();
+                dEL_AUTO_Form.Show();
+
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            DEL_AUTO_Form dEL_AUTO_Form = new DEL_AUTO_Form();
+
+            this.Hide();
+            dEL_AUTO_Form.Show();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+        }
+    }
+}
