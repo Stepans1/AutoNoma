@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class DEL_Klients_Form : Form
+    {
+        public DEL_Klients_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+       
+        private void DEL_Klients_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from Klients", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void Back_DEL_KL_button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminKlients adminFormV3 = new AdminKlients();
+            adminFormV3.Show();
+        }
+
+        private void DEL_KL_button_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = $"delete from Klients where K_ID = @K_ID";
+                SqlCommand command = new SqlCommand(query, SqlConnection);
+                command.Parameters.AddWithValue("K_ID", textBox1.Text);
+                MessageBox.Show(command.ExecuteNonQuery().ToString());
+                textBox1.Clear();
+                this.Hide();
+                DEL_Klients_Form dEL_Klients_Form = new DEL_Klients_Form();
+                dEL_Klients_Form.Show();
+            }
+            catch
+            {
+                MessageBox.Show(" ERROR ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox1.Clear();
+
+
+                DEL_Klients_Form dEL_Klients_Form = new DEL_Klients_Form();
+
+                this.Hide();
+                dEL_Klients_Form.Show();
+
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            DEL_Klients_Form dEL_Klients_ = new DEL_Klients_Form();
+            dEL_Klients_.Show();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+        }
+    }
+}
