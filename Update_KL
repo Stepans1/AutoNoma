@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class Update_KL_Form : Form
+    {
+        public Update_KL_Form()
+        {
+            InitializeComponent();
+        }
+        int selectedRow;
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            selectedRow = e.RowIndex;
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox_ID.Text = row.Cells[0].Value.ToString();
+                textBox_Pasts.Text = row.Cells[1].Value.ToString();
+                textBox_Vards.Text = row.Cells[2].Value.ToString();
+                textBox_Uzvards.Text = row.Cells[3].Value.ToString();
+                textBox_Parole.Text = row.Cells[4].Value.ToString();
+              
+            }
+        }
+
+        private void Update_KL_Form_Enter(object sender, EventArgs e)
+        {
+
+        }
+        private SqlConnection SqlConnection = null;
+        private void Update_KL_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+          ("select * from Klients", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void BACK_Button_Update_KL_Click(object sender, EventArgs e)
+        {
+            AdminKlients adminFormV3 = new AdminKlients();
+            this.Hide();
+            adminFormV3.Show();
+        }
+        private void update()
+        {
+            var selectedRowIndex = dataGridView1.CurrentCell.RowIndex;
+            var id = textBox_ID.Text;
+            var Pasts = textBox_Pasts.Text;
+            var Vards = textBox_Vards.Text;
+            var Uzvards = textBox_Uzvards.Text;
+            var Parole = textBox_Parole.Text;
+          
+            if (dataGridView1.Rows[selectedRowIndex].Cells[0].Value.ToString() != string.Empty)
+            {
+                dataGridView1.Rows[selectedRowIndex].SetValues(id, Pasts, Vards, Uzvards, Parole);
+                var changeQuery = $"update Klients set K_Pasts='{Pasts}',K_Vards='{Vards}',K_Uzvards='{Uzvards}',K_Parole='{Parole}'where K_ID='{id}'";
+                var command = new SqlCommand(changeQuery, SqlConnection);
+                command.ExecuteNonQuery();
+            }
+           
+        }   
+       
+        private void UPDATE_Button_KL_Click(object sender, EventArgs e)
+        {
+            update();
+         
+
+
+                
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            textBox_Vards.Clear();
+            textBox_Uzvards.Clear();
+            textBox_Pasts.Clear();
+            textBox_Parole.Clear();
+            textBox_ID.Clear();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Update_KL_Form update = new Update_KL_Form();
+            update.Show();
+        }
+    }
+}
+
