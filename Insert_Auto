@@ -1,0 +1,59 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class INSERT_AUTO_Form : Form
+    {
+        public INSERT_AUTO_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+
+        private void INSERT_AUTO_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+            if (SqlConnection.State == ConnectionState.Open)
+            {
+                MessageBox.Show("Conekt est");
+            }
+        }
+
+        private void Insert_Auto_Button_Click(object sender, EventArgs e)
+        {
+            var Zimols = textBox_A_Zimols.Text;
+            var Modelis = textBox_A_Modelis.Text;
+            int price;
+
+            if (int.TryParse(textBox_A_Cena1H.Text,out price))
+            {
+                var addQerry = $"insert into Automobili(A_Zimols,A_Modelis,A_CenaPar1H)values('{Zimols}','{Modelis}','{price}')";
+                var command = new SqlCommand(addQerry, SqlConnection);
+                command.ExecuteNonQuery();
+                MessageBox.Show("Pieerakts ir izveidots");
+            }
+            else
+            {
+                MessageBox.Show("Cenai jabut INT formata");
+            }
+        }
+
+        private void BACK_Insert_Auto_Button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminAuto adminAuto = new AdminAuto();
+            adminAuto.Show();
+        }
+    }
+}
