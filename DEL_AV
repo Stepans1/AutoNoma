@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AutoNoma
+{
+    public partial class DEL_AV_Form : Form
+    {
+        public DEL_AV_Form()
+        {
+            InitializeComponent();
+        }
+        private SqlConnection SqlConnection = null;
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            textBox1.Clear();
+        }
+
+        private void DEL_AV_Form_Load(object sender, EventArgs e)
+        {
+            SqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["KeyDB"].ConnectionString);//PODKLUCENIJE K DB
+            SqlConnection.Open();
+       
+            SqlDataAdapter dataAdapter = new SqlDataAdapter
+           ("select * from AtrasanasVieta", SqlConnection);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
+            dataGridView1.DataSource = dataSet.Tables[0];
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            DEL_AV_Form dEL_AV = new DEL_AV_Form();
+            dEL_AV.Show();
+        }
+
+        private void Back_DEL_Auto_button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            AdminVietas_Form vietas_Form = new AdminVietas_Form();
+            vietas_Form.Show();
+        }
+
+        private void DEL_Auto_button_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = $"delete from AtrasanasViieta where A_Numurs = @A_Numurs";
+                SqlCommand command = new SqlCommand(query, SqlConnection);
+                command.Parameters.AddWithValue("A_Numurs", textBox1.Text);
+                MessageBox.Show(command.ExecuteNonQuery().ToString());
+                textBox1.Clear();
+                this.Hide();
+                DEL_AV_Form dEL_AV = new DEL_AV_Form();
+                dEL_AV.Show();
+
+              
+            }
+            catch
+            {
+                MessageBox.Show(" ERROR ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox1.Clear();
+
+
+              
+
+                this.Hide();
+                DEL_AV_Form dEL_AV = new DEL_AV_Form();
+                dEL_AV.Show();
+
+            }
+        }
+    }
+}
